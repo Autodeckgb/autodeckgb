@@ -1,0 +1,85 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: #0a0a0a;
+  color: white;
+}
+
+/* HEADER */
+header {
+  background: black;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid red;
+}
+
+header h2 {
+  margin: 0;
+  color: red;
+  letter-spacing: 2px;
+}
+
+/* HERO */
+.hero {
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 55px;
+  margin: 0;
+}
+
+.hero p {
+  color: #aaa;
+  max-width: 600px;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  margin-top: 15px;
+  background: red;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.btn:hover {
+  background: darkred;
+}
+
+/* STOCK GRID */
+#carList {
+  padding: 20px;
+}
+
+.car-card {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.car-card:hover {
+  transform: scale(1.03);
+}
+
+.car-card img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 20px;
+  background: black;
+  color: #777;
+}
