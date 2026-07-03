@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoDeck — Inventory Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A; --panel:#141414; --panel-2:#1C1C1C;
+    --white:#F2F0EC; --grey:#9B9B9B; --red:#D91A22; --red-bright:#F0242D;
+    --gold:#C6A15B; --gold-bright:#E4C784; --line:rgba(242,240,236,0.14);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--black); color:var(--white); font-family:'Inter',sans-serif; min-height:100vh;}
+  .wrap{max-width:760px; margin:0 auto; padding:50px 20px 100px;}
+  h1{font-family:'Rajdhani'; font-weight:700; text-transform:uppercase; font-size:26px; letter-spacing:0.02em;}
+  .topbar{display:flex; justify-content:space-between; align-items:center; margin-bottom:36px; border-bottom:1px solid var(--line); padding-bottom:24px;}
+  .signout{background:none; border:1px solid var(--line); color:var(--grey); padding:9px 16px; font-size:12.5px; cursor:pointer; text-transform:uppercase; letter-spacing:0.06em;}
+  .signout:hover{border-color:var(--red); color:var(--red-bright);}
+
+  /* login */
+  #loginScreen{max-width:360px; margin:120px auto; text-align:center;}
+  #loginScreen h1{margin-bottom:8px;}
+  #loginScreen p.sub{color:var(--grey); font-size:14px; margin-bottom:32px;}
+  .field{margin-bottom:16px; text-align:left;}
+  .field label{display:block; font-size:11.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:8px; font-weight:600;}
+  .field input, .field select, .field textarea{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--white);
+    padding:12px 14px; font-family:'Inter'; font-size:14px;
+  }
+  .field input:focus, .field select:focus{outline:none; border-color:var(--gold);}
+  .btn{
+    width:100%; background:var(--red); color:#fff; border:none; padding:14px;
+    font-family:'Rajdhani'; font-weight:700; font-size:15px; letter-spacing:0.06em; text-transform:uppercase;
+    cursor:pointer; transition:background .2s;
+  }
+  .btn:hover{background:var(--red-bright);}
+  .error{color:var(--red-bright); font-size:13px; margin-top:14px; display:none;}
+
+  /* app */
+  #appScreen{display:none;}
+  .panel{background:var(--panel); border:1px solid var(--line); padding:26px; margin-bottom:32px;}
+  .panel h2{font-family:'Rajdhani'; font-size:18px; text-transform:uppercase; margin-bottom:20px;}
+  .row{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .photo-drop{
+    border:1.5px dashed var(--line); padding:22px; text-align:center; cursor:pointer;
+    transition:border-color .2s; position:relative; margin-bottom:16px;
+  }
+  .photo-drop:hover{border-color:var(--gold);}
+  .photo-drop input{position:absolute; inset:0; opacity:0; cursor:pointer;}
+  .photo-drop .hint{font-size:13px; color:var(--grey);}
+  .preview{margin-top:12px; max-height:160px; overflow:hidden; border:1px solid var(--line); display:none;}
+  .preview img{width:100%; display:block;}
+  .photo-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:12px;}
+  .photo-thumb{position:relative; aspect-ratio:4/3; border:1px solid var(--line); overflow:hidden;}
+  .photo-thumb img{width:100%; height:100%; object-fit:cover; display:block;}
+  .photo-thumb .rm{
+    position:absolute; top:4px; right:4px; width:20px; height:20px; border-radius:50%;
+    background:rgba(10,10,10,0.75); color:#fff; border:none; font-size:12px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; line-height:1;
+  }
+  .photo-thumb .rm:hover{background:var(--red);}
+  .photo-thumb .new-badge{
+    position:absolute; bottom:4px; left:4px; background:var(--gold); color:#1a1400;
+    font-size:9px; padding:2px 6px; text-transform:uppercase; letter-spacing:0.04em; font-weight:700;
+  }
+  .sold-toggle{display:flex; align-items:center; gap:10px; margin:16px 0; font-size:14px;}
+  .sold-toggle input{width:16px; height:16px; accent-color:var(--red);}
+  .status-msg{font-size:13px; margin-top:12px; display:none;}
+  .status-msg.ok{color:#7FA98F;}
+  .status-msg.err{color:var(--red-bright);}
+
+  /* list */
+  .listing{display:flex; gap:16px; align-items:center; padding:14px 0; border-bottom:1px solid var(--line);}
+  .listing:last-child{border-bottom:none;}
+  .listing .thumb{width:72px; height:54px; background:var(--panel-2); flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center;}
+  .listing .thumb img{width:100%; height:100%; object-fit:cover;}
+  .listing .info{flex:1; min-width:0;}
+  .listing .info h3{font-family:'Rajdhani'; font-size:16px; text-transform:uppercase;}
+  .listing .info p{color:var(--grey); font-size:12.5px; margin-top:2px;}
+  .listing .price{font-family:'Rajdhani'; font-weight:700; color:var(--gold-bright); font-size:16px; flex-shrink:0;}
+  .listing .actions{display:flex; gap:8px; flex-shrink:0;}
+  .listing .actions button{
+    background:var(--panel-2); border:1px solid var(--line); color:var(--white);
+    padding:8px 12px; font-size:11.5px; text-transform:uppercase; letter-spacing:0.04em; cursor:pointer;
+  }
+  .listing .actions button:hover{border-color:var(--gold);}
+  .listing .actions button.danger:hover{border-color:var(--red); color:var(--red-bright);}
+  .badge-sold{background:var(--red); color:#fff; font-size:10px; padding:3px 8px; text-transform:uppercase; letter-spacing:0.05em; margin-left:8px;}
+  .empty{color:var(--grey); font-size:14px; text-align:center; padding:20px 0;}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <h1>AutoDeck</h1>
+  <p class="sub">Inventory manager — sign in to continue</p>
+  <div class="field">
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="you@autodeck.ltd">
+  </div>
+  <div class="field">
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="••••••••">
+  </div>
+  <button class="btn" onclick="doSignIn()">Sign in</button>
+  <p class="error" id="loginError">Wrong email or password. Try again.</p>
+</div>
+
+<div id="appScreen">
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Inventory manager</h1>
+      <button class="signout" onclick="doSignOut()">Sign out</button>
+    </div>
+
+    <div class="panel">
+      <h2 id="formTitle">Add a vehicle</h2>
+      <div class="field">
+        <label for="title">Vehicle title</label>
+        <input id="title" type="text" placeholder="e.g. Sport Coupe">
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category">
+            <option value="Japanese Import">Japanese Import</option>
+            <option value="UK Vehicle">UK Vehicle</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="price">Price (£)</label>
+          <input id="price" type="text" placeholder="e.g. 24,200">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="year">Year</label>
+          <input id="year" type="text" placeholder="e.g. 2023">
+        </div>
+        <div class="field">
+          <label for="fuel">Fuel</label>
+          <input id="fuel" type="text" placeholder="e.g. Petrol">
+        </div>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="mileage">Mileage</label>
+          <input id="mileage" type="text" placeholder="e.g. 18,400 mi">
+        </div>
+        <div class="field">
+          <label for="trans">Transmission</label>
+          <input id="trans" type="text" placeholder="e.g. Automatic">
+        </div>
+      </div>
+      <div class="field">
+        <label>Photos (you can select several at once — 8–10 is fine)</label>
+        <div class="photo-drop">
+          <span class="hint" id="photoHint">Click to choose photos from your device</span>
+          <input id="photo" type="file" accept="image/*" multiple>
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+      <div class="sold-toggle">
+        <input type="checkbox" id="sold">
+        <label for="sold" style="margin:0; text-transform:none; color:var(--white); font-size:14px;">Mark as sold</label>
+      </div>
+      <button class="btn" id="saveBtn" onclick="saveVehicle()">Save vehicle</button>
+      <button class="btn" id="cancelEditBtn" style="background:var(--panel-2); color:var(--grey); margin-top:10px; display:none;" onclick="resetForm()">Cancel edit</button>
+      <p class="status-msg" id="statusMsg"></p>
+    </div>
+
+    <div class="panel">
+      <h2>Current listings</h2>
+      <div id="listings"><p class="empty">Loading…</p></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script>
+  /* ====== PASTE YOUR FIREBASE CONFIG BELOW (same one used in index.html) ====== */
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  /* ============================================================================ */
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const storage = firebase.storage();
+
+  let existingPhotos = [];   // URLs already saved (when editing)
+  let newPhotoFiles = [];    // {file, dataUrl} picked but not yet uploaded
+  let editingId = null;
+
+  auth.onAuthStateChanged(function(user){
+    document.getElementById('loginScreen').style.display = user ? 'none' : 'block';
+    document.getElementById('appScreen').style.display = user ? 'block' : 'none';
+    if(user) loadListings();
+  });
+
+  function doSignIn(){
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    document.getElementById('loginError').style.display = 'none';
+    auth.signInWithEmailAndPassword(email, password).catch(function(){
+      document.getElementById('loginError').style.display = 'block';
+    });
+  }
+
+  function doSignOut(){ auth.signOut(); }
+
+  document.getElementById('photo').addEventListener('change', function(e){
+    const files = Array.from(e.target.files || []);
+    let remaining = files.length;
+    if(!remaining) return;
+    files.forEach(function(file){
+      const reader = new FileReader();
+      reader.onload = function(evt){
+        newPhotoFiles.push({ file: file, dataUrl: evt.target.result });
+        renderPhotoGrid();
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = ''; // allow re-selecting the same file(s) later
+  });
+
+  function renderPhotoGrid(){
+    const grid = document.getElementById('photoGrid');
+    let html = '';
+    existingPhotos.forEach(function(url, i){
+      html += '<div class="photo-thumb"><img src="' + url + '" alt="">' +
+              '<button type="button" class="rm" onclick="removeExistingPhoto(' + i + ')">&times;</button></div>';
+    });
+    newPhotoFiles.forEach(function(p, i){
+      html += '<div class="photo-thumb"><img src="' + p.dataUrl + '" alt="">' +
+              '<span class="new-badge">New</span>' +
+              '<button type="button" class="rm" onclick="removeNewPhoto(' + i + ')">&times;</button></div>';
+    });
+    grid.innerHTML = html;
+    const total = existingPhotos.length + newPhotoFiles.length;
+    document.getElementById('photoHint').textContent = total
+      ? total + ' photo' + (total > 1 ? 's' : '') + ' selected — click to add more'
+      : 'Click to choose photos from your device';
+  }
+
+  function removeExistingPhoto(i){ existingPhotos.splice(i, 1); renderPhotoGrid(); }
+  function removeNewPhoto(i){ newPhotoFiles.splice(i, 1); renderPhotoGrid(); }
+
+  function showStatus(msg, type){
+    const el = document.getElementById('statusMsg');
+    el.textContent = msg;
+    el.className = 'status-msg ' + type;
+    el.style.display = 'block';
+    if(type === 'ok') setTimeout(function(){ el.style.display = 'none'; }, 3000);
+  }
+
+  function resetForm(){
+    editingId = null;
+    document.getElementById('formTitle').textContent = 'Add a vehicle';
+    document.getElementById('title').value = '';
+    document.getElementById('category').value = 'Japanese Import';
+    document.getElementById('price').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('fuel').value = '';
+    document.getElementById('mileage').value = '';
+    document.getElementById('trans').value = '';
+    document.getElementById('sold').checked = false;
+    document.getElementById('photo').value = '';
+    existingPhotos = [];
+    newPhotoFiles = [];
+    renderPhotoGrid();
+    document.getElementById('cancelEditBtn').style.display = 'none';
+    document.getElementById('saveBtn').textContent = 'Save vehicle';
+  }
+
+  function saveVehicle(){
+    const title = document.getElementById('title').value.trim();
+    if(!title){ showStatus('Please enter a vehicle title.', 'err'); return; }
+
+    const data = {
+      title: title,
+      category: document.getElementById('category').value,
+      price: document.getElementById('price').value.trim(),
+      year: document.getElementById('year').value.trim(),
+      fuel: document.getElementById('fuel').value.trim(),
+      mileage: document.getElementById('mileage').value.trim(),
+      trans: document.getElementById('trans').value.trim(),
+      sold: document.getElementById('sold').checked,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    document.getElementById('saveBtn').textContent = 'Saving…';
+
+    function writeDoc(allPhotoUrls){
+      data.photos = allPhotoUrls;
+      const ref = editingId ? db.collection('vehicles').doc(editingId) : db.collection('vehicles').doc();
+      ref.set(data, { merge: true }).then(function(){
+        showStatus('Saved.', 'ok');
+        resetForm();
+        loadListings();
+      }).catch(function(err){
+        showStatus('Could not save: ' + err.message, 'err');
+        document.getElementById('saveBtn').textContent = 'Save vehicle';
+      });
+    }
+
+    if(newPhotoFiles.length){
+      const uploads = newPhotoFiles.map(function(p){
+        const path = 'vehicles/' + Date.now() + '_' + Math.random().toString(36).slice(2) + '_' + p.file.name;
+        return storage.ref(path).put(p.file).then(function(snap){ return snap.ref.getDownloadURL(); });
+      });
+      Promise.all(uploads).then(function(newUrls){
+        writeDoc(existingPhotos.concat(newUrls));
+      }).catch(function(err){
+        showStatus('Photo upload failed: ' + err.message, 'err');
+        document.getElementById('saveBtn').textContent = 'Save vehicle';
+      });
+    } else {
+      writeDoc(existingPhotos.slice());
+    }
+  }
+
+  function loadListings(){
+    db.collection('vehicles').orderBy('createdAt', 'desc').onSnapshot(function(snapshot){
+      const el = document.getElementById('listings');
+      if(snapshot.empty){
+        el.innerHTML = '<p class="empty">No vehicles added yet.</p>';
+        return;
+      }
+      let html = '';
+      snapshot.forEach(function(doc){
+        const v = doc.data();
+        const firstPhoto = (v.photos && v.photos.length) ? v.photos[0] : v.photoURL;
+        const thumb = firstPhoto ? '<img src="' + firstPhoto + '" alt="">' : '';
+        const photoCount = (v.photos && v.photos.length) ? v.photos.length : (v.photoURL ? 1 : 0);
+        html +=
+          '<div class="listing">' +
+            '<div class="thumb">' + thumb + '</div>' +
+            '<div class="info"><h3>' + escapeHtml(v.title) +
+              (v.sold ? '<span class="badge-sold">Sold</span>' : '') +
+              '</h3><p>' + escapeHtml(v.year) + ' · ' + escapeHtml(v.category) + ' · ' + photoCount + ' photo' + (photoCount === 1 ? '' : 's') + '</p></div>' +
+            '<div class="price">£' + escapeHtml(v.price) + '</div>' +
+            '<div class="actions">' +
+              '<button onclick="editVehicle(\'' + doc.id + '\')">Edit</button>' +
+              '<button onclick="toggleSold(\'' + doc.id + '\', ' + (!v.sold) + ')">' + (v.sold ? 'Mark available' : 'Mark sold') + '</button>' +
+              '<button class="danger" onclick="deleteVehicle(\'' + doc.id + '\')">Delete</button>' +
+            '</div>' +
+          '</div>';
+      });
+      el.innerHTML = html;
+      window._vehicleCache = {};
+      snapshot.forEach(function(doc){ window._vehicleCache[doc.id] = doc.data(); });
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function editVehicle(id){
+    const v = window._vehicleCache[id];
+    if(!v) return;
+    editingId = id;
+    document.getElementById('formTitle').textContent = 'Edit vehicle';
+    document.getElementById('title').value = v.title || '';
+    document.getElementById('category').value = v.category || 'Japanese Import';
+    document.getElementById('price').value = v.price || '';
+    document.getElementById('year').value = v.year || '';
+    document.getElementById('fuel').value = v.fuel || '';
+    document.getElementById('mileage').value = v.mileage || '';
+    document.getElementById('trans').value = v.trans || '';
+    document.getElementById('sold').checked = !!v.sold;
+    existingPhotos = (v.photos && v.photos.length) ? v.photos.slice() : (v.photoURL ? [v.photoURL] : []);
+    newPhotoFiles = [];
+    renderPhotoGrid();
+    document.getElementById('cancelEditBtn').style.display = 'block';
+    document.getElementById('saveBtn').textContent = 'Update vehicle';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function toggleSold(id, newValue){
+    db.collection('vehicles').doc(id).update({ sold: newValue });
+  }
+
+  function deleteVehicle(id){
+    if(!confirm('Delete this vehicle listing? This cannot be undone.')) return;
+    db.collection('vehicles').doc(id).delete();
+  }
+</script>
+
+</body>
+</html>
