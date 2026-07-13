@@ -67,6 +67,55 @@
   .btn-wa:hover{filter:brightness(1.08);}
   .nav-toggle{display:none; background:none; border:none; color:var(--white); font-size:24px; cursor:pointer;}
 
+
+
+  /* ---------- COVER PAGE ---------- */
+  .cover{
+    min-height:100vh;
+    padding:170px 0 70px;
+    display:flex;
+    align-items:flex-end;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--line);
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.24) 0%, rgba(0,0,0,0.42) 54%, rgba(0,0,0,0.82) 100%),
+      linear-gradient(90deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.18) 40%, rgba(0,0,0,0.82) 100%),
+      url('cover-banner.png') center center / cover no-repeat,
+      var(--black);
+  }
+  .cover::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(to top, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.2) 38%, rgba(10,10,10,0.45) 100%);
+    pointer-events:none;
+  }
+  .cover::after{
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:140px;
+    background:linear-gradient(to bottom, rgba(10,10,10,0), rgba(10,10,10,0.95));
+    pointer-events:none;
+  }
+  .cover-inner{position:relative; z-index:1; max-width:1180px; width:100%;}
+  .cover-card{
+    max-width:540px;
+    background:rgba(10,10,10,0.68);
+    border:1px solid rgba(242,240,236,0.12);
+    box-shadow:0 20px 50px rgba(0,0,0,0.35);
+    backdrop-filter:blur(8px);
+    padding:28px 28px 24px;
+  }
+  .cover-kicker{font-family:'Rajdhani'; font-weight:700; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold-bright); font-size:15px; margin-bottom:10px;}
+  .cover h1{font-size:clamp(36px,5.5vw,60px); line-height:.96; margin-bottom:16px;}
+  .cover h1 .accent{color:var(--red-bright);}
+  .cover p{color:#d4d4d4; font-size:15px; max-width:520px; margin-bottom:26px;}
+  .cover-actions{display:flex; gap:14px; flex-wrap:wrap;}
+  .cover-note{display:flex; gap:16px; flex-wrap:wrap; margin-top:22px; color:#c3c3c3; font-size:11px; letter-spacing:0.08em; text-transform:uppercase;}
+  .cover-note span{border-left:2px solid var(--red); padding-left:10px;}
+
   /* ---------- HERO ---------- */
   .hero{
     padding:196px 0 90px;
@@ -145,19 +194,6 @@
   .car-photo svg{width:46%; opacity:0.5;}
   .car-photo img{width:100%; height:100%; object-fit:cover;}
   .car-photo .ph-label{position:absolute; bottom:10px; left:12px; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--grey);}
-  .photo-nav{
-    position:absolute; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:50%;
-    background:rgba(10,10,10,0.55); border:1px solid rgba(242,240,236,0.25); color:var(--white);
-    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; z-index:2;
-    transition:background .2s;
-  }
-  .photo-nav:hover{background:rgba(217,26,34,0.75); border-color:var(--red-bright);}
-  .photo-nav.prev{left:10px;}
-  .photo-nav.next{right:10px;}
-  .photo-counter{
-    position:absolute; bottom:10px; right:12px; background:rgba(10,10,10,0.6);
-    color:var(--white); font-size:11px; padding:3px 9px; border-radius:10px; z-index:2;
-  }
   .car-tag{position:absolute; top:12px; left:12px; background:var(--red); color:#fff; font-size:10.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; padding:5px 10px; border-radius:2px;}
   .car-body{padding:22px; flex:1; display:flex; flex-direction:column;}
   .car-body h3{font-family:'Rajdhani'; font-size:21px; text-transform:uppercase; margin-bottom:12px;}
@@ -204,6 +240,8 @@
     .car-grid{grid-template-columns:1fr;}
     .why-grid{grid-template-columns:1fr;}
     .contact-grid{grid-template-columns:1fr;}
+    .cover{padding-top:150px; align-items:flex-end;}
+    .cover-card{max-width:100%; padding:22px 20px;}
   }
 </style>
 </head>
@@ -211,10 +249,11 @@
 
 <header>
   <nav class="wrap">
-    <a class="brand" href="#top">
+    <a class="brand" href="#cover">
       <img src="logo.png" alt="AutoDeck Ltd logo">
     </a>
     <div class="nav-links">
+      <a href="#cover">Home</a>
       <a href="#about">About</a>
       <a href="#services">Services</a>
       <a href="#stock">Stock</a>
@@ -229,6 +268,27 @@
     </div>
   </nav>
 </header>
+
+
+<section class="cover" id="cover">
+  <div class="wrap cover-inner">
+    <div class="cover-card">
+      <div class="cover-kicker">Welcome to AutoDeck</div>
+      <h1 class="display">Driven by <span class="accent">Trust</span>, Built for Your Next Drive</h1>
+      <p>Your selected landing image is now the main cover banner. Visitors immediately see the AutoDeck brand, contact details, and core services, while the call-to-action below leads them into the stock and contact sections.</p>
+      <div class="cover-actions">
+        <a href="#stock" class="btn btn-primary">View Current Stock</a>
+        <a href="https://wa.me/447359639169" target="_blank" rel="noopener" class="btn btn-ghost">WhatsApp AutoDeck</a>
+        <a href="#contact" class="btn btn-ghost">Contact Us</a>
+      </div>
+      <div class="cover-note">
+        <span>Car Sales &amp; Sourcing</span>
+        <span>Quality You Can Trust</span>
+        <span>Service You Can Rely On</span>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="hero" id="top">
   <div class="wrap hero-inner">
@@ -410,33 +470,11 @@
       .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function cyclePhoto(btn, dir){
-    const container = btn.closest('.car-photo');
-    const photos = JSON.parse(container.getAttribute('data-photos'));
-    let idx = parseInt(container.getAttribute('data-idx'), 10);
-    idx = (idx + dir + photos.length) % photos.length;
-    container.setAttribute('data-idx', idx);
-    container.querySelector('.photo-img').src = photos[idx];
-    container.querySelector('.photo-counter').textContent = (idx + 1) + ' / ' + photos.length;
-  }
-
   function renderCard(v){
     const waText = encodeURIComponent("Hi AutoDeck, I'm interested in the " + (v.title || 'vehicle'));
-    const photos = (v.photos && v.photos.length) ? v.photos : (v.photoURL ? [v.photoURL] : []);
-    let photoBlock, photoAttrs;
-    if(photos.length){
-      photoAttrs = ' data-photos=\'' + JSON.stringify(photos).replace(/'/g, '&#39;') + '\' data-idx="0"';
-      photoBlock = '<img class="photo-img" src="' + esc(photos[0]) + '" alt="' + esc(v.title) + '">';
-      if(photos.length > 1){
-        photoBlock +=
-          '<button type="button" class="photo-nav prev" onclick="cyclePhoto(this,-1)" aria-label="Previous photo">&#10094;</button>' +
-          '<button type="button" class="photo-nav next" onclick="cyclePhoto(this,1)" aria-label="Next photo">&#10095;</button>' +
-          '<span class="photo-counter">1 / ' + photos.length + '</span>';
-      }
-    } else {
-      photoAttrs = '';
-      photoBlock = '<svg viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 22h56M8 22c0-6 4-11 9-13h14c5 2 9 7 9 13M8 22a4 4 0 1 0 8 0 4 4 0 0 0-8 0zM48 22a4 4 0 1 0 8 0 4 4 0 0 0-8 0z"/></svg><span class="ph-label">Photo coming soon</span>';
-    }
+    const photoBlock = v.photoURL
+      ? '<img src="' + esc(v.photoURL) + '" alt="' + esc(v.title) + '">'
+      : '<svg viewBox="0 0 64 32" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 22h56M8 22c0-6 4-11 9-13h14c5 2 9 7 9 13M8 22a4 4 0 1 0 8 0 4 4 0 0 0-8 0zM48 22a4 4 0 1 0 8 0 4 4 0 0 0-8 0z"/></svg><span class="ph-label">Photo coming soon</span>';
     const soldRibbon = v.sold ? '<span class="sold-ribbon">Sold</span>' : '';
     const cardClass = v.sold ? 'car-card sold' : 'car-card';
     const enquireBlock = v.sold
@@ -445,7 +483,7 @@
 
     return (
       '<div class="' + cardClass + '">' +
-        '<div class="car-photo"' + photoAttrs + '>' + soldRibbon +
+        '<div class="car-photo">' + soldRibbon +
           '<span class="car-tag">' + esc(v.category) + '</span>' +
           photoBlock +
         '</div>' +
